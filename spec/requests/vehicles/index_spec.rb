@@ -1,0 +1,41 @@
+require 'rails_helper'
+
+RSpec.describe 'Api::V1::VehicleController', type: :request do
+
+  describe 'GET /index' do
+    let(:valid_brand) { Brand.create!(name: 'Brompton') }
+    let(:valid_model) { Model.create!(name: 'Wiggin', brand: valid_brand)}
+
+    before do
+      Vehicle.create([
+        { name: 'Steve',
+          legal_identifier: '1234',
+          frame_size: 2,
+          status: 'action_required',
+          model: valid_model
+        },
+        { name: 'George',
+          legal_identifier: '432',
+          frame_size: 2,
+          status: 'action_required',
+          model: valid_model
+        },
+        { name: 'Craig',
+          legal_identifier: 'Hello',
+          frame_size: 2,
+          status: 'action_required',
+          model: valid_model
+        }])
+      get "/api/v1/brands/#{valid_brand.id}/models/#{valid_model.id}/vehicles"
+    end
+
+
+    it 'returns all brands' do
+      expect(json.size).to eq(3)
+    end
+
+    it 'returns status code 200' do
+      expect(response).to have_http_status(:success)
+    end
+  end
+end
